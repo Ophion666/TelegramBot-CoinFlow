@@ -6,4 +6,4 @@ router = Router()
 
 @router.message(CommandStart())
 async def command_start_handler(message: Message) -> None:
-    await message.answer("Привят Кисяу")
+    await message.answer("Hi!")
