@@ -5,6 +5,7 @@ from services.expense_service import parser, category_track
 from db.database import SessionLocal
 from repositories.transaction_repository import TransactionRepository
 from models.category import OperationType
+from services.timezone_service import to_local
 
 router = Router()
 
@@ -21,7 +22,7 @@ async def handle_expense(message: Message) -> None:
         lines.append("Транзакция добавлена")
         lines.append("--------------------")
         for transaction in reversed(transactions):
-            date_str = transaction.created_at.strftime("%d.%m %H:%M")
+            date_str = to_local(transaction.created_at).strftime("%d.%m %H:%M")
             if transaction.category.type == OperationType.income:
                 lines.append(f"{date_str} | {transaction.category.name} | +{transaction.amount} | {transaction.comment}")
             else: lines.append(f"{date_str} | {transaction.category.name} | -{transaction.amount} | {transaction.comment}")
