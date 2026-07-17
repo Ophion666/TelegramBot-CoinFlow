@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session, joinedload
 from datetime import datetime
 from models.transaction import Transaction
+from sqlalchemy import desc
 
 
 class TransactionRepository:
@@ -34,3 +35,6 @@ class TransactionRepository:
     
     def get_all(self):
         return self.db.query(Transaction).options(joinedload(Transaction.category)).all()
+
+    def get_last_ten(self, limit: int = 10):
+        return self.db.query(Transaction).options(joinedload(Transaction.category)).order_by(desc(Transaction.created_at)).limit(limit).all()
