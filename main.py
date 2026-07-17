@@ -1,5 +1,5 @@
 from db.database import Base, engine
-
+from aiogram.types import BotCommand
 from models import category
 from models import transaction
 from models import authorized_user
@@ -13,8 +13,18 @@ db = SessionLocal()
 
 Base.metadata.create_all(bind=engine)
 
+async def set_commands(bot):
+    commands = [
+        BotCommand(command="login", description="Авторизация"),
+        BotCommand(command="stats", description="Статистика"),
+        BotCommand(command="his", description="История транзакций"),
+    ]
+    await bot.set_my_commands(commands)
+
 async def main():
+    await set_commands(bot)
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
     asyncio.run(main())
+
