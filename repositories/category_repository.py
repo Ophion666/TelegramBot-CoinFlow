@@ -8,7 +8,7 @@ class CategoryRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_by_name(self, name: str):
+    def get_by_name(self, name: str, operation_type: OperationType):
         return self.db.query(Category).filter(Category.name == name, Category.type == operation_type).first()
 
     def create(self, name: str, operation_type: OperationType):
