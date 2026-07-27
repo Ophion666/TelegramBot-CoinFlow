@@ -25,7 +25,7 @@ def category_track(db, operation: str, amount: float, category_name: str, commen
     transaction_repo = TransactionRepository(db)
     category_type = OperationType(operation)
     category_name = category_name.capitalize()
-    name_category = category_repo.get_by_name(name=category_name)
+    name_category = category_repo.get_by_name(name=category_name, operation_type=category_type)
     if not name_category:
         name_category = category_repo.create(name=category_name, operation_type=category_type)
     name_id = name_category.id

@@ -9,7 +9,7 @@ class CategoryRepository:
         self.db = db
 
     def get_by_name(self, name: str):
-        return self.db.query(Category).filter(Category.name == name).first()
+        return self.db.query(Category).filter(Category.name == name, Category.type == operation_type).first()
 
     def create(self, name: str, operation_type: OperationType):
         category = Category(
