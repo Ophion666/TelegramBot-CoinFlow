@@ -13,6 +13,13 @@ class HistoryStates(StatesGroup):
 
 router = Router()
 
+CHUNK_SIZE = 4000
+
+async def send_long_message(message: Message, text: str):
+    for i in range(0, len(text), CHUNK_SIZE):
+        chunk = text[i:i+CHUNK_SIZE]
+        await message.answer(chunk)
+
 @router.message(Command("his"), IsAuthorized())
 async def history_handler(message: Message, state: FSMContext) -> None:
     await message.answer("Введи месяц в формате 'мм.гггг'")
@@ -32,16 +39,19 @@ async def history_period_handler(message: Message, state: FSMContext) -> None:
             month, year = resault
             transactions = transaction_repo.get_by_month(month, year)
 
-        lines = []
-        for transaction in transactions:
-            date_str = transaction.created_at.strftime("%d.%m.%Y")
-            if transaction.category.type == OperationType.income:
-                lines.append(f"{date_str} | {transaction.category.name} | +{transaction.amount} | {transaction.comment}")
-            else: lines.append(f"{date_str} | {transaction.category.name} | -{transaction.amount} | {transaction.comment}")
+        if not transactions:
+            await message.answer("За этот период транзакций не найдено")
+        else: 
+            lines = []
+            for transaction in transactions:
+                date_str = transaction.created_at.strftime("%d.%m.%Y")
+                if transaction.category.type == OperationType.income:
+                    lines.append(f"{date_str} | {transaction.category.name} | +{transaction.amount} | {transaction.comment}")
+                else: lines.append(f"{date_str} | {transaction.category.name} | -{transaction.amount} | {transaction.comment}")
 
-        text = "\n".join(lines)
-        await message.answer(text)
-        await state.clear()
+            text = "\n".join(lines)
+            await send_long_message(message, text)
+            await state.clear()
     except ValueError:
         await message.answer("Неверный формат. Введи ММ.ГГГГ")
     finally:
