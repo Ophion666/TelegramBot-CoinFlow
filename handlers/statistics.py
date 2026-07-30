@@ -39,7 +39,12 @@ async def period_handler(message: Message, state: FSMContext) -> None:
         lines = []
 
         lines.append("Доходы:")
-        for category_name, amount in stats["income_category_totals"].items():
+        sorted_items = sorted(
+            stats["income_category_totals"].items(),
+            key=lambda item: income_percentages.get(item[0], 0),
+            reverse=True
+        )
+        for category_name, amount in sorted_items:
             inc_perc = income_percentages.get(category_name, 0)
             lines.append(f"{category_name} - {amount} ({inc_perc}%)")
         lines.append(f"Итого доход: {stats['total_income']}")
@@ -47,7 +52,12 @@ async def period_handler(message: Message, state: FSMContext) -> None:
         lines.append("----------")
 
         lines.append("Расходы:")
-        for category_name, amount in stats["category_totals"].items():
+        sorted_items = sorted(
+            stats["category_totals"].items(),
+            key=lambda item: percentages.get(item[0], 0),
+            reverse=True
+        )
+        for category_name, amount in sorted_items:
             percent = percentages.get(category_name, 0)
             lines.append(f"{category_name} - {amount} ({percent}%)")
         lines.append(f"Итого расход: {stats['total_expense']}")
